@@ -92,19 +92,43 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 		{
 			if (point.number != null)
 			{
-				this.labels.get(point.number).setLocation(point.x().intValue() + pointRadius/2, point.y().intValue() + pointRadius/2);
+				if (POINT_STYLE_SWICH)
+				{
+					this.labels.get(point.number).setLocation(point.x().intValue() - pointRadius/2, point.y().intValue() - pointRadius/2);	
+				}
+				else
+				{
+					this.labels.get(point.number).setLocation(point.x().intValue() + pointRadius/2, point.y().intValue() + pointRadius/2);
+				}
 			}
 		}
 		if (this.highlightedPoint != null)
 		{
 			g.setColor(pointColorHigh);
-			g.fillOval
-			(
-					getXFor(this.highlightedPoint.x().intValue(), base) - pointRadius/2,
-					getYFor(this.highlightedPoint.y().intValue(), base) - pointRadius/2,
-					pointRadius,
-					pointRadius
-			);
+			if (POINT_STYLE_SWICH)
+			{
+				g.fillOval
+				(
+						getXFor(this.highlightedPoint.x().intValue(), base) - pointRadius,
+						getYFor(this.highlightedPoint.y().intValue(), base) - pointRadius,
+						2 * pointRadius,
+						2 * pointRadius
+				);
+				if (this.highlightedPoint.number != null)
+				{
+					this.labels.get(this.highlightedPoint.number).setBackground(pointColorHigh);
+				}
+			}
+			else
+			{
+				g.fillOval
+				(
+						getXFor(this.highlightedPoint.x().intValue(), base) - pointRadius/2,
+						getYFor(this.highlightedPoint.y().intValue(), base) - pointRadius/2,
+						pointRadius,
+						pointRadius
+				);	
+			}
 		}
 		if (this.highLightedWayLink != null)
 		{
@@ -156,7 +180,21 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 						{
 							GraphPoint graphPoint = new GraphPoint((new GeneralValue()).setValue(transformBackX(e.getX())), (new GeneralValue()).setValue(transformBackY(e.getY())));
 							graph.addPoint(graphPoint);
+							if (POINT_STYLE_SWICH && (highlightedPoint != null))
+							{
+								if (highlightedPoint.number != null)
+								{
+									labels.get(highlightedPoint.number).setBackground(pointBackGroundColor);
+								}
+							}
 							highlightedPoint = graphPoint;
+							if (POINT_STYLE_SWICH)
+							{
+								if (highlightedPoint.number != null)
+								{
+									labels.get(highlightedPoint.number).setBackground(pointColorHigh);
+								}
+							}
 							actionPerformedFlag = true;
 						}
 						else if (e.isControlDown())
@@ -165,7 +203,14 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 						}
 						else
 						{
-							highlightedPoint = null;
+							if (highlightedPoint != null)
+							{
+								if (highlightedPoint.number != null)
+								{
+									labels.get(highlightedPoint.number).setBackground(pointBackGroundColor);
+								}
+								highlightedPoint = null;
+							}
 						}
 					}
 					else
@@ -207,12 +252,30 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 							}
 							else
 							{
+								if (POINT_STYLE_SWICH)
+								{
+									if (highlightedPoint.number != null)
+									{
+										labels.get(highlightedPoint.number).setBackground(pointBackGroundColor);
+									}
+								}
 								highlightedPoint = point;
+								if (POINT_STYLE_SWICH)
+								{
+									if (highlightedPoint.number != null)
+									{
+										labels.get(highlightedPoint.number).setBackground(pointColorHigh);
+									}
+								}
 							}
 						}
 						else
 						{
 							highlightedPoint = point;
+							if (highlightedPoint.number != null)
+							{
+								labels.get(highlightedPoint.number).setBackground(pointColorHigh);
+							}
 						}
 					}
 					if (!graph.hasPoint(highlightedPoint))
@@ -258,7 +321,17 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 						}
 						JLabel label = new JLabel((point.number+1) + "");
 						label.setSize(labelSize * (label.getText().length()), labelSize);
-						label.setLocation(point.x().intValue() + pointRadius/2, point.y().intValue() + pointRadius/2);
+						if (POINT_STYLE_SWICH)
+						{
+							label.setOpaque(true);
+							label.setBackground(pointColorHigh);
+							label.setLocation(point.x().intValue() - pointRadius/2, point.y().intValue() - pointRadius/2);
+							label.setFocusable(false);
+						}
+						else
+						{
+							label.setLocation(point.x().intValue() + pointRadius/2, point.y().intValue() + pointRadius/2);
+						}
 						labels.set(point.number, label);
 						floor.add(label, 0);
 						linkageMatrix.updateMatrix(graph, highlightedPoint);
