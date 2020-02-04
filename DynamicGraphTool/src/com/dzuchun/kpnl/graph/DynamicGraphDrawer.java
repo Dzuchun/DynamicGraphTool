@@ -34,6 +34,10 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 		this.searchFrame = new GraphSearchFrame(this, this.graph);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 	}
+	public void repaintBase()
+	{
+		this.base.repaint();
+	}
 	private int getXFor(int result, Canvas base)
 	{
 		return(int)(0 + base.getSize().getWidth() * (result - this.lowerCornerPosition.getWidth()) / (this.higherCornerPosition.getWidth() - this.lowerCornerPosition.getWidth()));
@@ -282,6 +286,7 @@ public class DynamicGraphDrawer extends MathGraphResultGrapher
 								labels.clear();
 								highlightedPoint = null;
 								highlightedLinks = null;
+								highLightedWayLink = null;
 								linkageMatrix.updateMatrix(graph, highlightedPoint);
 								base.repaint();
 								return;

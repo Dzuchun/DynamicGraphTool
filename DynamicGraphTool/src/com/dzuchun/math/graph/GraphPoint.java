@@ -111,4 +111,12 @@ public class GraphPoint extends Point implements Cloneable, Sortable
 			return new Integer(this.number);
 		}
 	}
+	public boolean equals(GraphPoint point)
+	{
+		if (this.number == point.number)
+		{
+			return true;
+		}
+		return false;
+	}
 }

@@ -232,6 +232,8 @@ public class GraphSearchFrame extends JFrame
 							return;
 						}
 						
+						parent.highLightedWayLink = null;
+						parent.repaintBase();
 						Vector<GraphPoint> way;
 						if (isWidth)
 						{
@@ -264,6 +266,7 @@ public class GraphSearchFrame extends JFrame
 							public void valueChanged(ListSelectionEvent e) 
 							{	
 								parent.highLightedWayLink = list.getSelectedValue();
+								parent.repaintBase();
 							}
 						});
 						paneWay.setViewportView(list);

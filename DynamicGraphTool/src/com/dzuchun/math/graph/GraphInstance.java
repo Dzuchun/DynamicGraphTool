@@ -83,18 +83,28 @@ public class GraphInstance implements Cloneable
 		}
 		System.out.println("Removed " + link + ", links left - " + this.links);
 	}
-	public Vector<GraphLink> getLinksForPoint(GraphPoint point) throws IllegalArgumentException
+	public Vector<GraphLink> getLinksForPoint(GraphPoint point_) throws IllegalArgumentException
 	{
+		GraphPoint point = point_;
 		if (!this.points.contains(point))
 		{
-			//TODO define for different hashcode
-			throw(new IllegalArgumentException("Can't get for point not present in graph"));
+			for (int i=0; i<this.points.size(); i++)
+			{
+				if (this.points.get(i).number == point.number)
+				{
+					point = this.points.get(i);
+				}
+			}
+			if (!this.points.contains(point))
+			{			
+				throw(new IllegalArgumentException("Can't get for point not present in graph"));
+			}
 		}
 		Vector<GraphLink> res = new Vector<GraphLink>(0);
 		for (GraphLink link : this.links)
 		{
 			log.log(Level.FINER, "Checking for link {0}", link);
-			if (point.equals(link.begin) || point.equals(link.end))
+			if ((point.number == link.begin.number) || (point.number == link.end.number))
 			{
 				log.log(Level.FINER, "Found link {0} for point {1}", new Object[] {link, point});
 				res.add(link);
@@ -121,6 +131,7 @@ public class GraphInstance implements Cloneable
 	{
 		return (new GraphInstance((Vector<GraphPoint>)this.points.clone(), (Vector<GraphLink>)this.links.clone()));
 	}
+	boolean cb, ce;
 	public Vector<GraphPoint> searchWidth (GraphPoint begin, GraphPoint end)
 	{
 		if (!this.hasPoint(begin) || !this.hasPoint(end))
@@ -139,24 +150,62 @@ public class GraphInstance implements Cloneable
 		while (!(found.containsAll(this.points) || found.contains(end) || (i==0)))
 		{
 			i=0;
-			for (j=steps.get(steps.size()-2); i<steps.get(steps.size()-1); i++)
+			for (j=steps.get(steps.size()-2); j<steps.get(steps.size()-1); j++)
 			{
 				for (GraphLink link : this.getLinksForPoint(found.get(j)))
 				{
-					if (!found.contains(link.getBegin()))
+					cb = false;
+					ce = false;
+					for (GraphPoint p : found)
 					{
-						found.add(link.getBegin());
-						i++;
+						if (!found.get(j).equals(p))
+						{
+							if (link.begin.equals(p))
+							{
+								cb = true;
+							}
+							if (link.end.equals(p))
+							{
+								ce = true;
+							}
+						}
 					}
-					else if (!found.contains(link.getEnd()))
+					if (!(cb || ce))
 					{
-						found.add(link.getEnd());
-						i++;
+						if (found.get(j).equals(link.begin))
+						{
+							found.add(link.end);
+							i++;
+							System.out.println("Adding point " + link.end);
+						}
+						if (found.get(j).equals(link.end))
+						{
+							found.add(link.begin);
+							i++;
+							System.out.println("Adding point " + link.begin);
+						}
 					}
 				}
-				System.out.println("Search:Added " + i + " elements at last step");
 			}
 			steps.add(found.size());
+			String s = "Search:Added " + i + " elements at last step: ";
+			for (int k=steps.get(steps.size()-2); k<steps.get(steps.size()-1); k++)
+			{
+				s+= found.get(k) + " ";
+			}
+			System.out.println(s);
+			s = "Found points: [";
+			for (int k=0; k<found.size(); k++)
+			{
+				s+= found.get(k);
+				if (steps.contains(k+1))
+				{
+					s+= ",";
+				}
+				s += " ";
+			}
+			s+="]";
+			System.out.println(s);
 		}
 		if (i==0)
 		{
@@ -168,18 +217,25 @@ public class GraphInstance implements Cloneable
 		res.add(0, end);
 		GraphPoint current = end;
 		
-		for (i=steps.size()-2; i==1; i--)
+		for (i=steps.size()-1; i>=1; i--)
 		{
+			cb = false;
 			for (j=steps.get(i-1); j<steps.get(i); j++)
 			{
 				if (this.getLinkForPoints(current, found.get(j)) != null)
 				{
 					current = found.get(j);
 					res.add(0, current);
+					cb = true;
 					break;
 				}
 			}
+			if (!cb)
+			{
+				System.out.println("Did not find point at step " + i);
+			}
 		}
+		
 		if (res.get(0) != begin)
 		{
 			System.out.println("Your search is broken, Dzuchun!");
@@ -195,10 +251,52 @@ public class GraphInstance implements Cloneable
 		
 		return res;
 	}
+	boolean cf;
 	public Vector<GraphPoint> searchDepth (GraphPoint begin, GraphPoint end)
 	{
-		//TODO depth search
-		return null;
+		if (!this.hasPoint(begin) || !this.hasPoint(end))
+		{
+			System.out.println("Can't search, points do not belong to graph");
+			return null;
+		}
+		Vector<GraphPoint> res = new Vector<GraphPoint>(0);
+		res.add(begin);
+		cb = false;
+		ce = false;
+		int clean = 1;
+		while (!cb && !ce)
+		{
+			
+			//TODO DEFINE DEPTH SEARCH!!!
+			
+			ce = true;
+			for (GraphPoint p1 : res)
+			{
+				if (p1.equals(end))
+				{
+					cb = true;
+					break;
+				}
+				cf = false;
+				for (GraphPoint p2 : this.points)
+				{
+					if (p2.equals(p1))
+					{
+						cf = true;
+						break;
+					}
+				}
+				if (!cf)
+				{
+					ce = false;
+				}
+			}
+		}
+		if (ce)
+		{
+			return null;
+		}
+		return res;
 	}
 	public GraphLink getLinkForPoints(GraphPoint begin, GraphPoint end)
 	{
