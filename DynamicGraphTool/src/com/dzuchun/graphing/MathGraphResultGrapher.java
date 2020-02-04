@@ -15,11 +15,14 @@ import com.dzuchun.math.graph.GraphPoint;
 public class MathGraphResultGrapher extends AbstractResultGrapher 
 {
 	private static final long serialVersionUID = 1L;
+	protected static final boolean POINT_STYLE_SWICH = true;
+	protected static int pointBorderWidth = 2;
 	protected static Color pointColor = Color.BLACK;
+	protected static Color pointBackGroundColor = Color.GREEN;
 	protected static Color pointColorHigh = Color.CYAN;
 	protected static int pointRadius = 10;
-	protected static Color linkColor = Color.BLUE;
-	protected static Color linkColorHigh = Color.DARK_GRAY;
+	protected static Color linkColorHigh = Color.BLUE;
+	protected static Color linkColor = Color.DARK_GRAY;
 	/**
 	 * !!UNRELEASED!!
 	 */
@@ -57,13 +60,41 @@ public class MathGraphResultGrapher extends AbstractResultGrapher
 		g.setColor(pointColor);
 		for (GraphPoint point : this.graph.getPoints())
 		{
-			g.fillOval
-			(
-					getXFor(point.x().intValue(), base) - pointRadius/2,
-					getYFor(point.y().intValue(), base) - pointRadius/2,
-					pointRadius,
-					pointRadius
-			);
+			
+			if (POINT_STYLE_SWICH)
+			{
+				g.fillOval
+				(
+						getXFor(point.x().intValue(), base) - pointRadius - pointBorderWidth,
+						getYFor(point.y().intValue(), base) - pointRadius - pointBorderWidth,
+						2*pointRadius + 2 * pointBorderWidth,
+						2*pointRadius + 2 * pointBorderWidth
+				);
+			}
+			else
+			{
+				g.fillOval
+				(
+						getXFor(point.x().intValue(), base) - pointRadius/2,
+						getYFor(point.y().intValue(), base) - pointRadius/2,
+						pointRadius,
+						pointRadius
+				);
+			}
+		}
+		if (POINT_STYLE_SWICH)
+		{
+			g.setColor(pointBackGroundColor);
+			for (GraphPoint point : this.graph.getPoints())
+			{
+				g.fillOval
+				(
+						getXFor(point.x().intValue(), base) - pointRadius,
+						getYFor(point.y().intValue(), base) - pointRadius,
+						2*pointRadius,
+						2*pointRadius
+				);	
+			}
 		}
 	}
 	public void redefineCorners()
