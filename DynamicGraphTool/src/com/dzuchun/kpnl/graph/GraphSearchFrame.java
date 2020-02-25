@@ -36,6 +36,7 @@ public class GraphSearchFrame extends JFrame
 	private JScrollPane paneWay;
 	private JLabel labelBegin;
 	private JLabel labelEnd;
+	private JButton labelConnectedness;
 	private GraphPoint pointBegin;
 	private GraphPoint pointEnd;
 	private GraphInstance graph;
@@ -52,7 +53,7 @@ public class GraphSearchFrame extends JFrame
 		Font font = new Font("Big font", Font.BOLD, 15);
 		
 		this.panel = new JPanel();
-		panel.setLayout(new GridLayout(5, 1, 0, 10));
+		panel.setLayout(new GridLayout(6, 1, 0, 10));
 		
 		panel.add(new JPanel() {{
 			
@@ -280,6 +281,34 @@ public class GraphSearchFrame extends JFrame
 			this.setSize(this.getWidth(), this.getHeight());
 		}}, BorderLayout.CENTER);
 		
+		panel.add(new JPanel(){{
+			this.add(new JLabel("Is connected:"));
+			this.add(new JButton("N/A"){{
+				this.setFocusable(false);
+				this.addActionListener(new ActionListener(){
+					private Vector<GraphPoint> points;
+					@Override
+					public void actionPerformed(ActionEvent e)
+					{
+						setText(System.currentTimeMillis() + "");
+						points = graph.getPoints();
+						setText("true");
+						for (int i=0; i<points.size(); i++)
+						{
+							for (int j = i+1; j<points.size(); j++)
+							{
+								if (graph.searchWidth(points.get(i), points.get(j)) == null)
+								{
+									System.out.println("Points " + i + " and " + j + " are not connected");
+									setText("false");
+								}
+							}
+						}
+					}
+				});
+			}});
+		}});
+
 		this.add(panel);
 		this.setMinimumSize(this.getSize());
 		this.setAlwaysOnTop(true);
